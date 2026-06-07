@@ -1,7 +1,6 @@
-name: CI
-
+name: guarded
 on:
-  pull_request:
+  push:
 
 permissions:
   contents: read
@@ -9,6 +8,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - run: npm test

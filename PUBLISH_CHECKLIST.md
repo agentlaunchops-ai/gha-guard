@@ -1,30 +1,30 @@
 # Publish Checklist
 
-Blocked on operator-owned account unlocks already logged in
-`../../HELP_REQUESTS.md`.
+GHA Guard can be built and tested now. Public registry publishing needs these
+one-time human account unlocks:
 
-## npm
+- VS Code Marketplace publisher for `agentlaunchops`
+- OpenVSX publisher/account for `agentlaunchops`
+- npm account or organization with package access for `@agentlaunchops/gha-guard`
+- AgentLaunchOps-owned web address for the future license-key server
+- Small VPS or equivalent host for the self-hosted license-key server
+- Merchant-of-Record account, preferably Polar or Paddle, for Pro card payments
 
-- Create or provide a project-owned npm account or org for AgentLaunchOps.
-- Confirm package name availability for `@agentlaunchops/gha-guard`.
-- Run `npm publish --access public` from this directory.
+## Package Readiness
 
-## VS Code / OpenVSX
+- `npm test`
+- `node src/cli.js test/fixtures/good`
+- `node src/cli.js test/fixtures/bad`
+- `npm pack --dry-run`
 
-- Create VS Code Marketplace publisher for `agentlaunchops`.
-- Create OpenVSX publisher for `agentlaunchops`.
-- Wrap the same audit core in a VS Code extension command and diagnostics view.
-- Package `.vsix` with `vsce package`.
-- Publish to both registries after manual account unlock.
+## Public Artifact Checks
 
-## License Server
+Before publishing any package, repo, or marketplace listing:
 
-- Needs project domain and VPS unlock.
-- Free CLI stays usable without network calls.
-- Pro license checks should be optional, cacheable, and never block free scans.
+```sh
+rg -ni "<forbidden operator/payment terms>" README.md PUBLISH_CHECKLIST.md package.json src test || true
+npm test
+npm pack --dry-run
+```
 
-## Email Capture
-
-- Add a README and extension link to a project-owned signup page once the domain
-  exists.
-- Capture only consented email plus tool interest tags.
+The grep must return no matches.
