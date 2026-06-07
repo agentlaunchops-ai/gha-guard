@@ -27,4 +27,4 @@
   actions to reduce noise for new users.
 - Added `--strict` to report every unpinned action, including first-party
   actions.
-- Removed internal planning language from the public README.
+- Removed non-user-facing wording from the public README.
