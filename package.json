@@ -1,5 +1,5 @@
 {
-  "name": "@agentlaunchops/gha-guard",
+  "name": "@agentlaunchopsai/gha-guard",
   "version": "0.1.0",
   "description": "Scan GitHub Actions workflows for risky defaults and supply-chain footguns.",
   "type": "module",

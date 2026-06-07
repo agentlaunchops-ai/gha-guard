@@ -18,7 +18,7 @@ workflow contents to any service.
 ## Install
 
 ```sh
-npm install -g @agentlaunchops/gha-guard
+npm install -g @agentlaunchopsai/gha-guard
 ```
 
 Local development:
@@ -34,6 +34,8 @@ node src/cli.js .
 ```sh
 gha-guard .
 gha-guard . --json
+npx @agentlaunchopsai/gha-guard .
+npx @agentlaunchopsai/gha-guard . --json
 ```
 
 The CLI scans `.github/workflows/*.yml` and `.github/workflows/*.yaml`. It exits
