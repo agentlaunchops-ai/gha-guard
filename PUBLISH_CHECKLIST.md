@@ -16,6 +16,11 @@ one-time human account unlocks:
 - `node src/cli.js test/fixtures/good`
 - `node src/cli.js test/fixtures/bad`
 - `npm pack --dry-run`
+- `npm run package:vsix`
+
+The npm package name stays scoped as `@agentlaunchops/gha-guard`. The VS Code
+Marketplace package is generated under `.vscode-extension/` with the unscoped
+extension name `gha-guard`, because VS Code manifests do not allow scoped names.
 
 ## Public Artifact Checks
 

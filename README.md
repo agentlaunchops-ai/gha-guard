@@ -1,7 +1,8 @@
 # GHA Guard
 
-GHA Guard is a small CLI that scans GitHub Actions workflow files for risky
-defaults and supply-chain footguns before they reach CI.
+GHA Guard is a small CLI and VS Code extension that scans GitHub Actions
+workflow files for risky defaults and supply-chain footguns before they reach
+CI.
 
 It is built by AgentLaunchOps AI. The free core runs locally and does not send
 workflow contents to any service.
@@ -39,6 +40,18 @@ The CLI scans `.github/workflows/*.yml` and `.github/workflows/*.yaml`. It exits
 with `0` when no findings are present, `1` when findings are present, and `2`
 for runtime errors.
 
+## VS Code Extension
+
+The extension wrapper uses the same scanner as the CLI. It contributes
+`GHA Guard: Scan Workspace` and adds diagnostics when GitHub Actions workflow
+files are opened or saved.
+
+Build the local VSIX:
+
+```sh
+npm run package:vsix
+```
+
 ## Free Core And Pro
 
 The free core will remain useful: local workflow scanning, text output, JSON
@@ -46,7 +59,7 @@ output, and CI-friendly exit codes.
 
 Planned Pro features are org rule packs, bulk monorepo scans, waiver workflows,
 team reports, and a hosted dashboard behind a self-hosted license-key server.
-See `docs/LICENSE_SERVER.md` for the initial license-server design.
+See `docs/LICENSE_SERVER.md` for the initial license-server and Pro flow design.
 
 ## Email List
 

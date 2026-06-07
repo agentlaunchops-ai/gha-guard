@@ -3,18 +3,35 @@
   "version": "0.1.0",
   "description": "Scan GitHub Actions workflows for risky defaults and supply-chain footguns.",
   "type": "module",
+  "main": "./src/extension.js",
   "bin": {
     "gha-guard": "src/cli.js"
   },
   "files": [
     "src",
+    "scripts",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "PUBLISH_CHECKLIST.md",
+    "docs"
   ],
   "scripts": {
     "test": "node --test",
     "scan": "node src/cli.js .",
+    "package:vsix": "node scripts/prepare-vsix.js && cd .vscode-extension && vsce package --no-dependencies --out ../gha-guard-0.1.0.vsix",
     "prepublishOnly": "npm test && node src/cli.js ."
+  },
+  "activationEvents": [
+    "onLanguage:yaml",
+    "onCommand:ghaGuard.scanWorkspace"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "ghaGuard.scanWorkspace",
+        "title": "GHA Guard: Scan Workspace"
+      }
+    ]
   },
   "keywords": [
     "github-actions",
@@ -28,5 +45,14 @@
   "dependencies": {
     "yaml": "^2.8.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@vscode/vsce": "^3.6.0"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ]
 }
