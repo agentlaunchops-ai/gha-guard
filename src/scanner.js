@@ -219,7 +219,7 @@ function checkPermissions(permissions, file, pathName, lineMap) {
   }
 
   return Object.entries(permissions)
-    .filter(([, value]) => value === "write")
+    .filter(([scope, value]) => value === "write" && scope !== "id-token")
     .map(([scope]) =>
       makeFinding(
         RULES.broadPermissions,

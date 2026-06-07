@@ -38,6 +38,11 @@ test("strict mode reports first-party actions as unpinned", async () => {
   assert.match(findings[0].message, /actions\/checkout@v6/);
 });
 
+test("oidc id-token write permission is not reported as broad write access", async () => {
+  const findings = await scanPath(path.join(fixtures, "oidc"));
+  assert.deepEqual(findings, []);
+});
+
 test("findings include source lines for workflow stanzas", async () => {
   const findings = await scanPath(path.join(fixtures, "bad"));
   const byRule = new Map(findings.map((finding) => [finding.ruleId, finding]));

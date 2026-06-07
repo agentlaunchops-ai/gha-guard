@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.6 - 2026-06-07
+
+- Treat `id-token: write` as a standard least-privilege OIDC permission instead
+  of reporting it as broad write access.
+
 ## 0.1.5 - 2026-06-07
 
 - Updated public package metadata and README wording.
