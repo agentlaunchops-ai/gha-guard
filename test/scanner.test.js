@@ -39,3 +39,19 @@ test("cli exits 0 when clean and 1 when findings exist", () => {
   assert.equal(risky.status, 1);
   assert.match(risky.stdout, /GHA001/);
 });
+
+test("cli can emit SARIF for code scanning upload", () => {
+  const result = spawnSync("node", ["src/cli.js", path.join(fixtures, "bad"), "--sarif"], {
+    cwd: path.join(__dirname, ".."),
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 1);
+
+  const sarif = JSON.parse(result.stdout);
+  assert.equal(sarif.version, "2.1.0");
+  assert.equal(sarif.runs[0].tool.driver.name, "gha-guard");
+  assert(sarif.runs[0].tool.driver.rules.some((rule) => rule.id === "GHA001"));
+  assert(sarif.runs[0].results.some((finding) => finding.ruleId === "GHA005"));
+  assert.match(sarif.runs[0].results[0].locations[0].physicalLocation.artifactLocation.uri, /\.ya?ml$/);
+});

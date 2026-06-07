@@ -34,13 +34,16 @@ node src/cli.js .
 ```sh
 gha-guard .
 gha-guard . --json
+gha-guard . --sarif
 npx @agentlaunchopsai/gha-guard .
 npx @agentlaunchopsai/gha-guard . --json
+npx @agentlaunchopsai/gha-guard . --sarif
 ```
 
 The CLI scans `.github/workflows/*.yml` and `.github/workflows/*.yaml`. It exits
 with `0` when no findings are present, `1` when findings are present, and `2`
-for runtime errors.
+for runtime errors. SARIF output is compatible with GitHub code scanning upload
+workflows.
 
 ## VS Code Extension
 
@@ -57,7 +60,7 @@ npm run package:vsix
 ## Free Core And Pro
 
 The free core will remain useful: local workflow scanning, text output, JSON
-output, and CI-friendly exit codes.
+output, SARIF output, and CI-friendly exit codes.
 
 Planned Pro features are org rule packs, bulk monorepo scans, waiver workflows,
 team reports, and a hosted dashboard behind a self-hosted license-key server.
