@@ -24,6 +24,20 @@ test("risky workflow reports discriminating rule ids", async () => {
   assert(ruleIds.includes("GHA005"));
 });
 
+test("default mode does not report first-party actions as unpinned", async () => {
+  const findings = await scanPath(path.join(fixtures, "first-party"));
+  assert.deepEqual(findings, []);
+});
+
+test("strict mode reports first-party actions as unpinned", async () => {
+  const findings = await scanPath(path.join(fixtures, "first-party"), { strict: true });
+  assert.deepEqual(
+    findings.map((finding) => finding.ruleId),
+    ["GHA001"]
+  );
+  assert.match(findings[0].message, /actions\/checkout@v6/);
+});
+
 test("findings include source lines for workflow stanzas", async () => {
   const findings = await scanPath(path.join(fixtures, "bad"));
   const byRule = new Map(findings.map((finding) => [finding.ruleId, finding]));

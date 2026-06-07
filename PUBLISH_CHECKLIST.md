@@ -24,7 +24,7 @@ extension name `gha-guard`, because VS Code manifests do not allow scoped names.
 
 ## Public Artifact Checks
 
-Before publishing any package, repo, or marketplace listing:
+For each package, repo, or marketplace listing release:
 
 ```sh
 rg -ni "<forbidden operator/payment terms>" README.md PUBLISH_CHECKLIST.md package.json src test || true

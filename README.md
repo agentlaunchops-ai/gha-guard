@@ -9,7 +9,7 @@ workflow contents to any service.
 
 ## What It Checks
 
-- External `uses:` actions that are not pinned to a full commit SHA
+- Third-party `uses:` actions that are not pinned to a full commit SHA
 - `pull_request_target` workflows that check out repository code
 - `write-all` or broad `*: write` permissions
 - Jobs without `timeout-minutes`
@@ -35,15 +35,18 @@ node src/cli.js .
 gha-guard .
 gha-guard . --json
 gha-guard . --sarif
+gha-guard . --strict
 npx @agentlaunchopsai/gha-guard .
 npx @agentlaunchopsai/gha-guard . --json
 npx @agentlaunchopsai/gha-guard . --sarif
+npx @agentlaunchopsai/gha-guard . --strict
 ```
 
 The CLI scans `.github/workflows/*.yml` and `.github/workflows/*.yaml`. It exits
 with `0` when no findings are present, `1` when findings are present, and `2`
 for runtime errors. SARIF output is compatible with GitHub code scanning upload
-workflows.
+workflows. By default, `GHA001` ignores first-party `actions/*` and `github/*`
+actions; use `--strict` to flag every unpinned action.
 
 ## VS Code Extension
 
@@ -59,18 +62,9 @@ npm run package:vsix
 
 ## Free Core And Pro
 
-The free core will remain useful: local workflow scanning, text output, JSON
-output, SARIF output, and CI-friendly exit codes.
-
-Planned Pro features are org rule packs, bulk monorepo scans, waiver workflows,
-team reports, and a hosted dashboard behind a self-hosted license-key server.
-See `docs/LICENSE_SERVER.md` for the initial license-server and Pro flow design.
-
-## Email List
-
-Before marketplace publishing, the README and extension welcome view should link
-to an AgentLaunchOps-owned signup page for release notes and rule-pack updates.
-Email capture must be optional and consent-based.
+The free core includes local workflow scanning, text output, JSON output, SARIF
+output, and CI-friendly exit codes. Any paid features will be documented only
+when they are available.
 
 ## License
 

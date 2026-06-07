@@ -7,13 +7,13 @@ const WORKFLOW_DIR = path.join(".github", "workflows");
 const SHA_RE = /^[a-f0-9]{40,64}$/i;
 const UNTRUSTED_RUN_EXPR_RE = /\$\{\{\s*(github\.event|github\.head_ref|github\.base_ref|inputs\.|matrix\.)/;
 
-export async function scanPath(targetPath = process.cwd()) {
+export async function scanPath(targetPath = process.cwd(), options = {}) {
   const root = path.resolve(targetPath);
   const files = await findWorkflowFiles(root);
   const findings = [];
 
   for (const file of files) {
-    findings.push(...(await scanWorkflowFile(file, root)));
+    findings.push(...(await scanWorkflowFile(file, root, options)));
   }
 
   return findings.sort((a, b) => {
@@ -22,7 +22,7 @@ export async function scanPath(targetPath = process.cwd()) {
   });
 }
 
-export async function scanWorkflowFile(filePath, root = process.cwd()) {
+export async function scanWorkflowFile(filePath, root = process.cwd(), options = {}) {
   const absoluteFile = path.resolve(filePath);
   const displayFile = path.relative(path.resolve(root), absoluteFile) || path.basename(absoluteFile);
   const source = await fs.readFile(absoluteFile, "utf8");
@@ -53,7 +53,7 @@ export async function scanWorkflowFile(filePath, root = process.cwd()) {
   const pullRequestTarget = hasPullRequestTarget(workflow.on);
 
   for (const item of usesValues) {
-    if (isExternalAction(item.value) && !isPinnedToSha(item.value)) {
+    if (shouldReportUnpinnedAction(item.value, options)) {
       findings.push(
         makeFinding(
           RULES.unpinnedAction,
@@ -174,6 +174,19 @@ function hasPullRequestTarget(onValue) {
 
 function isExternalAction(usesValue) {
   return !usesValue.startsWith("./") && !usesValue.startsWith("../") && !usesValue.startsWith("docker://");
+}
+
+function shouldReportUnpinnedAction(usesValue, options) {
+  return (
+    isExternalAction(usesValue) &&
+    !isPinnedToSha(usesValue) &&
+    (options.strict || !isTrustedFirstPartyAction(usesValue))
+  );
+}
+
+function isTrustedFirstPartyAction(usesValue) {
+  const actionName = usesValue.split("@")[0].toLowerCase();
+  return actionName.startsWith("actions/") || actionName.startsWith("github/");
 }
 
 function isPinnedToSha(usesValue) {

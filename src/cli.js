@@ -4,6 +4,7 @@ import { scanPath } from "./scanner.js";
 const args = process.argv.slice(2);
 const json = args.includes("--json");
 const sarif = args.includes("--sarif");
+const strict = args.includes("--strict");
 const help = args.includes("--help") || args.includes("-h");
 const target = args.find((arg) => !arg.startsWith("-")) || process.cwd();
 
@@ -11,15 +12,17 @@ if (help) {
   console.log(`gha-guard
 
 Usage:
-  gha-guard [path] [--json|--sarif]
+  gha-guard [path] [--json|--sarif] [--strict]
 
 Scans .github/workflows/*.yml and *.yaml for risky GitHub Actions patterns.
+By default, GHA001 ignores first-party actions/* and github/* actions.
+Use --strict to flag every unpinned action, including first-party actions.
 Exits 0 when clean and 1 when findings are present.`);
   process.exit(0);
 }
 
 try {
-  const findings = await scanPath(target);
+  const findings = await scanPath(target, { strict });
 
   if (sarif) {
     console.log(JSON.stringify(toSarif(findings), null, 2));
