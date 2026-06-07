@@ -36,17 +36,45 @@ gha-guard .
 gha-guard . --json
 gha-guard . --sarif
 gha-guard . --strict
+gha-guard . --no-fail
 npx @agentlaunchopsai/gha-guard .
 npx @agentlaunchopsai/gha-guard . --json
 npx @agentlaunchopsai/gha-guard . --sarif
 npx @agentlaunchopsai/gha-guard . --strict
+npx @agentlaunchopsai/gha-guard . --no-fail
 ```
 
 The CLI scans `.github/workflows/*.yml` and `.github/workflows/*.yaml`. It exits
 with `0` when no findings are present, `1` when findings are present, and `2`
 for runtime errors. SARIF output is compatible with GitHub code scanning upload
 workflows. By default, `GHA001` ignores first-party `actions/*` and `github/*`
-actions; use `--strict` to flag every unpinned action.
+actions; use `--strict` to flag every unpinned action. Use `--no-fail` when a
+CI job should report findings without failing the build.
+
+GitHub code scanning example:
+
+```yaml
+name: gha-guard
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  scan-actions:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx -y @agentlaunchopsai/gha-guard . --sarif --no-fail > gha-guard.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gha-guard.sarif
+```
 
 ## VS Code Extension
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4 - 2026-06-07
+
+- Added `--no-fail` so advisory CI jobs and SARIF upload workflows can report
+  findings while exiting successfully.
+- Added a GitHub code scanning upload example to the README.
+
 ## 0.1.3 - 2026-06-07
 
 - Fixed the published CLI file mode so `npx @agentlaunchopsai/gha-guard` exposes

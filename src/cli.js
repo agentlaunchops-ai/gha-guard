@@ -5,6 +5,7 @@ const args = process.argv.slice(2);
 const json = args.includes("--json");
 const sarif = args.includes("--sarif");
 const strict = args.includes("--strict");
+const noFail = args.includes("--no-fail");
 const help = args.includes("--help") || args.includes("-h");
 const target = args.find((arg) => !arg.startsWith("-")) || process.cwd();
 
@@ -12,11 +13,12 @@ if (help) {
   console.log(`gha-guard
 
 Usage:
-  gha-guard [path] [--json|--sarif] [--strict]
+  gha-guard [path] [--json|--sarif] [--strict] [--no-fail]
 
 Scans .github/workflows/*.yml and *.yaml for risky GitHub Actions patterns.
 By default, GHA001 ignores first-party actions/* and github/* actions.
 Use --strict to flag every unpinned action, including first-party actions.
+Use --no-fail to report findings while exiting 0 for advisory CI jobs.
 Exits 0 when clean and 1 when findings are present.`);
   process.exit(0);
 }
@@ -38,7 +40,7 @@ try {
     }
   }
 
-  process.exit(findings.length > 0 ? 1 : 0);
+  process.exit(findings.length > 0 && !noFail ? 1 : 0);
 } catch (error) {
   console.error(`gha-guard: ${error.message}`);
   process.exit(2);

@@ -63,6 +63,16 @@ test("cli exits 0 when clean and 1 when findings exist", () => {
   assert.match(risky.stdout, /GHA001/);
 });
 
+test("cli --no-fail reports findings while exiting 0", () => {
+  const result = spawnSync("node", ["src/cli.js", path.join(fixtures, "bad"), "--no-fail"], {
+    cwd: path.join(__dirname, ".."),
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /GHA001/);
+});
+
 test("cli can emit SARIF for code scanning upload", () => {
   const result = spawnSync("node", ["src/cli.js", path.join(fixtures, "bad"), "--sarif"], {
     cwd: path.join(__dirname, ".."),
@@ -78,4 +88,14 @@ test("cli can emit SARIF for code scanning upload", () => {
   assert(sarif.runs[0].results.some((finding) => finding.ruleId === "GHA005"));
   assert.match(sarif.runs[0].results[0].locations[0].physicalLocation.artifactLocation.uri, /\.ya?ml$/);
   assert(sarif.runs[0].results.some((finding) => finding.locations[0].physicalLocation.region.startLine === 13));
+});
+
+test("cli can emit SARIF without failing the process", () => {
+  const result = spawnSync("node", ["src/cli.js", path.join(fixtures, "bad"), "--sarif", "--no-fail"], {
+    cwd: path.join(__dirname, ".."),
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(JSON.parse(result.stdout).version, "2.1.0");
 });
