@@ -1,6 +1,6 @@
 {
   "name": "@agentlaunchopsai/gha-guard",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Scan GitHub Actions workflows for risky defaults and supply-chain footguns.",
   "type": "module",
   "main": "./src/extension.js",
@@ -41,7 +41,7 @@
     "ci",
     "linter"
   ],
-  "author": "AgentLaunchOps AI",
+  "author": "AgentLaunchOps",
   "license": "MIT",
   "dependencies": {
     "yaml": "^2.8.1"

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5 - 2026-06-07
+
+- Updated public package metadata and README wording.
+- Updated package author and license holder text to `AgentLaunchOps`.
+
 ## 0.1.4 - 2026-06-07
 
 - Added `--no-fail` so advisory CI jobs and SARIF upload workflows can report
