@@ -1,0 +1,30 @@
+{
+  "name": "@agentlaunchops/gha-guard",
+  "version": "0.1.0",
+  "description": "Audit GitHub Actions workflows for unpinned actions and risky defaults.",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "gha-guard": "bin/gha-guard.js"
+  },
+  "scripts": {
+    "test": "node test/cli.test.js",
+    "pack:check": "npm pack --dry-run"
+  },
+  "keywords": [
+    "github-actions",
+    "security",
+    "ci",
+    "workflow",
+    "linter"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "README.md",
+    "LICENSE"
+  ]
+}
