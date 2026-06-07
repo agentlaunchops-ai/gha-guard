@@ -6,6 +6,12 @@ CI.
 
 The free core runs locally and does not send workflow contents to any service.
 
+Use it as a quick GitHub Actions security audit before enabling new workflows,
+reviewing outside contributions, or adding release and publish automation. It is
+designed to catch high-signal CI/CD supply-chain issues early: unpinned actions,
+dangerous `pull_request_target` patterns, broad workflow permissions, missing job
+timeouts, and shell injection risks from event data.
+
 ## What It Checks
 
 - Third-party `uses:` actions that are not pinned to a full commit SHA
@@ -18,6 +24,7 @@ The free core runs locally and does not send workflow contents to any service.
 
 ```sh
 npm install -g @agentlaunchopsai/gha-guard
+npx @agentlaunchopsai/gha-guard .
 ```
 
 Local development:
@@ -41,6 +48,19 @@ npx @agentlaunchopsai/gha-guard . --json
 npx @agentlaunchopsai/gha-guard . --sarif
 npx @agentlaunchopsai/gha-guard . --strict
 npx @agentlaunchopsai/gha-guard . --no-fail
+```
+
+Common checks:
+
+```sh
+# Audit GitHub Actions workflow supply-chain risk locally
+npx @agentlaunchopsai/gha-guard .
+
+# Produce SARIF for GitHub code scanning
+npx @agentlaunchopsai/gha-guard . --sarif --no-fail > gha-guard.sarif
+
+# Flag every unpinned action, including first-party actions
+npx @agentlaunchopsai/gha-guard . --strict
 ```
 
 The CLI scans `.github/workflows/*.yml` and `.github/workflows/*.yaml`. It exits
