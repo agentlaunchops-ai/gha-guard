@@ -1,6 +1,6 @@
 {
   "name": "@agentlaunchopsai/gha-guard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scan GitHub Actions workflows for risky defaults and supply-chain footguns.",
   "type": "module",
   "main": "./src/extension.js",
@@ -18,7 +18,7 @@
   "scripts": {
     "test": "node --test",
     "scan": "node src/cli.js .",
-    "package:vsix": "node scripts/prepare-vsix.js && cd .vscode-extension && vsce package --no-dependencies --out ../gha-guard-0.1.0.vsix",
+    "package:vsix": "node scripts/prepare-vsix.js && cd .vscode-extension && vsce package --no-dependencies --out ../gha-guard-$npm_package_version.vsix",
     "prepublishOnly": "npm test && node src/cli.js ."
   },
   "activationEvents": [
