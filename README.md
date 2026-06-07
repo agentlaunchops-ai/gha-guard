@@ -46,6 +46,7 @@ output, and CI-friendly exit codes.
 
 Planned Pro features are org rule packs, bulk monorepo scans, waiver workflows,
 team reports, and a hosted dashboard behind a self-hosted license-key server.
+See `docs/LICENSE_SERVER.md` for the initial license-server design.
 
 ## Email List
 
