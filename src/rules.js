@@ -26,13 +26,14 @@ export const RULES = {
   }
 };
 
-export function makeFinding(rule, file, message, path) {
+export function makeFinding(rule, file, message, path, line = 1) {
   return {
     ruleId: rule.id,
     severity: rule.severity,
     title: rule.title,
     file,
     path,
+    line,
     message
   };
 }

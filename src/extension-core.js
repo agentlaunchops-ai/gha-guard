@@ -6,14 +6,15 @@ export function isWorkflowPath(filePath) {
 }
 
 export function findingToDiagnostic(finding) {
+  const line = Math.max((finding.line || 1) - 1, 0);
   return {
     severity: finding.severity === "error" ? "error" : "warning",
     message: `${finding.ruleId}: ${finding.message}`,
     source: "gha-guard",
     code: finding.ruleId,
     range: {
-      start: { line: 0, character: 0 },
-      end: { line: 0, character: 1 }
+      start: { line, character: 0 },
+      end: { line, character: 1 }
     }
   };
 }

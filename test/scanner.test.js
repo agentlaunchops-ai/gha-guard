@@ -24,6 +24,15 @@ test("risky workflow reports discriminating rule ids", async () => {
   assert(ruleIds.includes("GHA005"));
 });
 
+test("findings include source lines for workflow stanzas", async () => {
+  const findings = await scanPath(path.join(fixtures, "bad"));
+  const byRule = new Map(findings.map((finding) => [finding.ruleId, finding]));
+
+  assert.equal(byRule.get("GHA002").line, 3);
+  assert.equal(byRule.get("GHA003").line, 5);
+  assert.equal(byRule.get("GHA005").line, 13);
+});
+
 test("cli exits 0 when clean and 1 when findings exist", () => {
   const clean = spawnSync("node", ["src/cli.js", path.join(fixtures, "good")], {
     cwd: path.join(__dirname, ".."),
@@ -54,4 +63,5 @@ test("cli can emit SARIF for code scanning upload", () => {
   assert(sarif.runs[0].tool.driver.rules.some((rule) => rule.id === "GHA001"));
   assert(sarif.runs[0].results.some((finding) => finding.ruleId === "GHA005"));
   assert.match(sarif.runs[0].results[0].locations[0].physicalLocation.artifactLocation.uri, /\.ya?ml$/);
+  assert(sarif.runs[0].results.some((finding) => finding.locations[0].physicalLocation.region.startLine === 13));
 });

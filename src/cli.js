@@ -82,7 +82,7 @@ function toSarif(findings) {
                   uri: finding.file
                 },
                 region: {
-                  startLine: 1
+                  startLine: finding.line || 1
                 }
               },
               logicalLocations: [

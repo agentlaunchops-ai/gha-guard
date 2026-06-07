@@ -26,6 +26,7 @@ export async function scanWorkflowFile(filePath, root = process.cwd()) {
   const absoluteFile = path.resolve(filePath);
   const displayFile = path.relative(path.resolve(root), absoluteFile) || path.basename(absoluteFile);
   const source = await fs.readFile(absoluteFile, "utf8");
+  const lineMap = buildLineMap(source);
   let workflow;
 
   try {
@@ -36,7 +37,8 @@ export async function scanWorkflowFile(filePath, root = process.cwd()) {
         { id: "GHA000", severity: "error", title: "Workflow YAML could not be parsed" },
         displayFile,
         error.message,
-        "$"
+        "$",
+        1
       )
     ];
   }
@@ -57,7 +59,8 @@ export async function scanWorkflowFile(filePath, root = process.cwd()) {
           RULES.unpinnedAction,
           displayFile,
           `Pin "${item.value}" to a full commit SHA instead of a mutable tag or branch.`,
-          item.path
+          item.path,
+          lineForPath(lineMap, item.path)
         )
       );
     }
@@ -69,12 +72,13 @@ export async function scanWorkflowFile(filePath, root = process.cwd()) {
         RULES.pullRequestTargetCheckout,
         displayFile,
         "pull_request_target runs with elevated token context; avoid checking out untrusted code in this workflow.",
-        "$.on.pull_request_target"
+        "$.on.pull_request_target",
+        lineForPath(lineMap, "$.on.pull_request_target")
       )
     );
   }
 
-  findings.push(...checkPermissions(workflow.permissions, displayFile, "$.permissions"));
+  findings.push(...checkPermissions(workflow.permissions, displayFile, "$.permissions", lineMap));
 
   for (const [jobName, job] of Object.entries(jobs)) {
     if (!job || typeof job !== "object") {
@@ -87,12 +91,13 @@ export async function scanWorkflowFile(filePath, root = process.cwd()) {
           RULES.missingTimeout,
           displayFile,
           `Job "${jobName}" has no timeout-minutes limit.`,
-          `$.jobs.${jobName}`
+          `$.jobs.${jobName}`,
+          lineForPath(lineMap, `$.jobs.${jobName}`)
         )
       );
     }
 
-    findings.push(...checkPermissions(job.permissions, displayFile, `$.jobs.${jobName}.permissions`));
+    findings.push(...checkPermissions(job.permissions, displayFile, `$.jobs.${jobName}.permissions`, lineMap));
 
     const steps = Array.isArray(job.steps) ? job.steps : [];
     steps.forEach((step, index) => {
@@ -102,7 +107,8 @@ export async function scanWorkflowFile(filePath, root = process.cwd()) {
             RULES.runExpression,
             displayFile,
             "Move untrusted event/input data into env or with: arguments before using it in run scripts.",
-            `$.jobs.${jobName}.steps[${index}].run`
+            `$.jobs.${jobName}.steps[${index}].run`,
+            lineForPath(lineMap, `$.jobs.${jobName}.steps[${index}].run`)
           )
         );
       }
@@ -178,7 +184,7 @@ function isPinnedToSha(usesValue) {
   return SHA_RE.test(usesValue.slice(atIndex + 1));
 }
 
-function checkPermissions(permissions, file, pathName) {
+function checkPermissions(permissions, file, pathName, lineMap) {
   if (!permissions) {
     return [];
   }
@@ -189,7 +195,8 @@ function checkPermissions(permissions, file, pathName) {
         RULES.broadPermissions,
         file,
         "Use the smallest explicit permissions block instead of write-all.",
-        pathName
+        pathName,
+        lineForPath(lineMap, pathName)
       )
     ];
   }
@@ -205,7 +212,63 @@ function checkPermissions(permissions, file, pathName) {
         RULES.broadPermissions,
         file,
         `Permission "${scope}: write" should be reduced unless this workflow truly needs it.`,
-        `${pathName}.${scope}`
+        `${pathName}.${scope}`,
+        lineForPath(lineMap, `${pathName}.${scope}`)
       )
     );
+}
+
+function buildLineMap(source) {
+  const lines = source.split(/\r?\n/);
+  const map = new Map([["$", 1]]);
+  const stack = [{ indent: -1, path: "$", arrayCounts: new Map() }];
+
+  lines.forEach((line, index) => {
+    const lineNumber = index + 1;
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      return;
+    }
+
+    const indent = line.match(/^\s*/)[0].length;
+    while (stack.length > 1 && indent <= stack.at(-1).indent) {
+      stack.pop();
+    }
+
+    const parent = stack.at(-1);
+    const arrayItem = line.match(/^\s*-\s+([A-Za-z0-9_-]+)\s*:/);
+    if (arrayItem) {
+      const itemIndex = parent.arrayCounts.get(parent.path) || 0;
+      parent.arrayCounts.set(parent.path, itemIndex + 1);
+
+      const itemPath = `${parent.path}[${itemIndex}]`;
+      const keyPath = `${itemPath}.${arrayItem[1]}`;
+      map.set(itemPath, lineNumber);
+      map.set(keyPath, lineNumber);
+      stack.push({ indent, path: itemPath, arrayCounts: new Map() });
+      return;
+    }
+
+    const key = trimmed.match(/^([A-Za-z0-9_-]+)\s*:/);
+    if (!key) {
+      return;
+    }
+
+    const keyPath = `${parent.path}.${key[1]}`;
+    map.set(keyPath, lineNumber);
+    stack.push({ indent, path: keyPath, arrayCounts: new Map() });
+  });
+
+  return map;
+}
+
+function lineForPath(lineMap, pathName) {
+  let current = pathName;
+  while (current && current !== "$") {
+    if (lineMap.has(current)) {
+      return lineMap.get(current);
+    }
+    current = current.replace(/(?:\.[^.[]+|\[\d+\])$/, "");
+  }
+  return lineMap.get("$") || 1;
 }

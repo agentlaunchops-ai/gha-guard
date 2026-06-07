@@ -13,13 +13,15 @@ test("finding conversion preserves severity and rule id", () => {
   const diagnostic = findingToDiagnostic({
     ruleId: "GHA002",
     severity: "error",
-    message: "unsafe checkout"
+    message: "unsafe checkout",
+    line: 12
   });
 
   assert.equal(diagnostic.severity, "error");
   assert.equal(diagnostic.source, "gha-guard");
   assert.equal(diagnostic.code, "GHA002");
   assert.match(diagnostic.message, /GHA002/);
+  assert.equal(diagnostic.range.start.line, 11);
 });
 
 test("workspace command summary separates errors and warnings", () => {
