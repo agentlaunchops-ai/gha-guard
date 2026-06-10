@@ -1,0 +1,26 @@
+# Example: run GHA Guard on every push/PR and publish findings to the
+# repository's Security > Code scanning tab.
+name: GHA Guard
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  security-events: write   # required for upload-sarif
+
+jobs:
+  gha-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - id: scan
+        uses: agentlaunchops-ai/gha-guard@v1
+        with:
+          fail-on-findings: false   # advisory; findings still appear in Security tab
+      - if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif-file }}

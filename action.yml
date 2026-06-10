@@ -1,0 +1,31 @@
+name: "GHA Guard"
+description: "Scan GitHub Actions workflows for risky defaults and supply-chain footguns (unpinned actions, pull_request_target checkout, broad permissions, missing timeouts, shell injection)."
+author: "AgentLaunchOps"
+branding:
+  icon: "shield"
+  color: "yellow"
+inputs:
+  path:
+    description: "Directory to scan (its .github/workflows is read)."
+    required: false
+    default: "."
+  strict:
+    description: "Also flag unpinned first-party actions/* and github/* actions."
+    required: false
+    default: "false"
+  fail-on-findings:
+    description: "Fail the job (exit 1) when any findings are present. Set false for advisory runs."
+    required: false
+    default: "true"
+  sarif-file:
+    description: "Path to write the SARIF report (upload with github/codeql-action/upload-sarif)."
+    required: false
+    default: "gha-guard.sarif"
+outputs:
+  findings-count:
+    description: "Number of findings detected."
+  sarif-file:
+    description: "Path to the written SARIF report."
+runs:
+  using: "node20"
+  main: "dist/index.cjs"
