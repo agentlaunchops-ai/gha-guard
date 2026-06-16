@@ -109,9 +109,17 @@ npm run package:vsix
 
 ## Free Core And Pro
 
-The free core includes local workflow scanning, text output, JSON output, SARIF
-output, and CI-friendly exit codes. Any paid features will be documented only
-when they are available.
+The free core (this package) includes local workflow scanning, text output, JSON
+output, SARIF output, and CI-friendly exit codes — and always will. It's MIT and
+stands on its own.
+
+If you want to go further, the optional **[GHA Guard Pro Kit](https://launchagent.gumroad.com/l/auqpvm?utm_source=gha-guard&utm_medium=readme&utm_campaign=pro)** ($29) adds:
+
+- An expanded rule set (more supply-chain and least-privilege checks)
+- A drop-in GitHub Action workflow so scans run on every PR
+- Remediation playbooks: the exact fix for each finding, with examples
+
+The Pro kit is optional — the free CLI is fully functional without it.
 
 ## License
 

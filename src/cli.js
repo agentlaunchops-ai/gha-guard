@@ -38,6 +38,10 @@ try {
         `${finding.file} ${finding.ruleId} ${finding.severity.toUpperCase()} ${finding.path}: ${finding.message}`
       );
     }
+    // One quiet note on stderr (keeps stdout clean for pipes/CI). Findings-only.
+    console.error(
+      `\n${findings.length} finding(s). Deeper rules + a drop-in Action + fix playbooks: https://launchagent.gumroad.com/l/auqpvm`
+    );
   }
 
   process.exit(findings.length > 0 && !noFail ? 1 : 0);
