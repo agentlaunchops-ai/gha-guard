@@ -18,7 +18,8 @@ const extensionPackage = {
     url: "https://github.com/agentlaunchops-ai/gha-guard/issues"
   },
   homepage: "https://github.com/agentlaunchops-ai/gha-guard#readme",
-  files: ["src", "docs", "README.md", "LICENSE", "PUBLISH_CHECKLIST.md"],
+  icon: "icon.png",
+  files: ["src", "docs", "icon.png", "README.md", "LICENSE", "PUBLISH_CHECKLIST.md"],
   private: true,
   bin: undefined,
   scripts: undefined,
@@ -34,6 +35,8 @@ await fs.writeFile(path.join(output, "package.json"), `${JSON.stringify(extensio
 for (const file of ["README.md", "LICENSE", "PUBLISH_CHECKLIST.md"]) {
   await fs.copyFile(path.join(root, file), path.join(output, file));
 }
+
+await fs.copyFile(path.join(root, "assets", "icon.png"), path.join(output, "icon.png"));
 
 await fs.copyFile(path.join(root, "docs", "LICENSE_SERVER.md"), path.join(output, "docs", "LICENSE_SERVER.md"));
 
